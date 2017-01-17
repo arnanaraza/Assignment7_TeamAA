@@ -22,7 +22,7 @@ MODISData <- PreProcessRaster(RasterFile)
 NLAdmin <- MyCountry ("NLD", 2)
 
 #Reproject and get rid of NA rows from administrative map
-NLUTM <- spTransform(NLAdmin, CRS(proj4string(MODData)))
+NLUTM <- spTransform(NLAdmin, CRS(proj4string(MODISData)))
 NLUTM@data <- NLUTM@data [!is.na(NLUTM$NAME_2),]
 
 #Mask raster data using municipal boundary
@@ -61,8 +61,8 @@ spplot(AugMuniNDVI, zcol="NDVI", main="NDVI per Municipality, August")
 spplot(YearMuniNDVI, zcol="NDVI", main="NDVI per Municipality, Year-round")
 
 #Compute for highest province and plot NDVI for January, province level
+JanProvNDVI <- aggregate(JanMuniNDVI, by='NAME_1', dissolve=TRUE, sums=list(list(mean, 'NDVI')))
 HighestProv <- JanProvNDVI[which(JanProvNDVI$NDVI == max(JanProvNDVI$NDVI, na.rm = TRUE)), ]
 print (paste("Highest is", as.character(HighestProv[[1]]),"with NDVI of", HighestProv[[2]]))
-JanProvNDVI <- aggregate(JanMuniNDVI, by='NAME_1', dissolve=TRUE, sums=list(list(mean, 'NDVI')))
 spplot(JanProvNDVI, zcol="NDVI", main="NDVI per Province, January")
 
